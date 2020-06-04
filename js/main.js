@@ -61,7 +61,7 @@ var getRandomElementOfArray = function (arr) {
   return arr[rand];
 };
 
-var shuffle = function (arr) {
+var getShuffleArray = function (arr) {
   var copy = [];
   var n = arr.length;
   var i;
@@ -75,7 +75,7 @@ var shuffle = function (arr) {
 
 var getDemoData = function () {
   var data = [];
-  var avatars = shuffle(ADDRES_ADD_AVATAR);
+  var avatars = getShuffleArray(ADDRES_ADD_AVATAR);
 
   for (var i = 0; i < NUMBER_OF_PINS; i++) {
     var item = {
@@ -96,7 +96,7 @@ var getDemoData = function () {
         photos: getArrayRandomLength(PHOTOS)
       },
       location: {
-        x: getRandomInteger(MIN_VALUE_X, mapPins.offsetWidth - 25),
+        x: getRandomInteger(MIN_VALUE_X, mapPins.offsetWidth - MIN_VALUE_X),
         y: getRandomInteger(MIN_VALUE_Y, MAX_VALUE_Y)
       }
     };
