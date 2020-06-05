@@ -3,7 +3,6 @@ var TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
 var TYPES = ['palace', 'flat', 'house', 'bungalo'];
-var ADDRES_ADD_AVATAR = [1, 2, 3, 4, 5, 6, 7, 8];
 var PIN_OFFSET_X = -25;
 var PIN_OFFSET_Y = -70;
 var NUMBER_OF_PINS = 8;
@@ -15,6 +14,14 @@ var pinTemplate = document.querySelector('#pin')
     .querySelector('.map__pin');
 var mapPins = document.querySelector('.map__pins');
 
+var getAvatarImgPrefixes = function () {
+  var pefixes = [];
+  for (var i = 1; i <= NUMBER_OF_PINS; i++) {
+    pefixes.push(i);
+  }
+  return getShuffleArray(pefixes);
+};
+
 var createPin = function (pin) {
   var pinElement = pinTemplate.cloneNode(true);
   var pinImg = pinElement.querySelector('img');
@@ -24,9 +31,9 @@ var createPin = function (pin) {
   return pinElement;
 };
 
-var createPins = function (arr) {
+var createPins = function (data) {
   var fragment = document.createDocumentFragment();
-  arr.forEach(function (item) {
+  data.forEach(function (item) {
     fragment.appendChild(createPin(item));
   });
   return fragment;
@@ -75,12 +82,12 @@ var getShuffleArray = function (arr) {
 
 var getDemoData = function () {
   var data = [];
-  var avatars = getShuffleArray(ADDRES_ADD_AVATAR);
+  var avatarImgPrefixes = getAvatarImgPrefixes();
 
   for (var i = 0; i < NUMBER_OF_PINS; i++) {
     var item = {
       author: {
-        avatar: 'img/avatars/user0' + avatars[i] + '.png'
+        avatar: 'img/avatars/user0' + avatarImgPrefixes[i] + '.png'
       },
       offer: {
         title: 'заголовок предложения ' + i,
