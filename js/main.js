@@ -12,7 +12,11 @@ var MAX_VALUE_Y = 630;
 var pinTemplate = document.querySelector('#pin')
     .content
     .querySelector('.map__pin');
+var cardTemlpate = document.querySelector('#card')
+    .content
+    .querySelector('.map__card');
 var mapPins = document.querySelector('.map__pins');
+var mapFilterContainer = document.querySelector('.map__filters-container');
 
 var getAvatarImgPrefixes = function () {
   var pefixes = [];
@@ -92,14 +96,14 @@ var getDemoData = function () {
       offer: {
         title: 'заголовок предложения ' + i,
         address: '600, 350',
-        price: 345 + (i * 345) + ' $',
+        price: 345 + (i * 345),
         type: getRandomElementOfArray(TYPES),
         rooms: getRandomInteger(1, 4),
         guests: getRandomInteger(1, 6),
         checkin: getRandomElementOfArray(TIMES),
         checkout: getRandomElementOfArray(TIMES),
         features: getArrayRandomLength(FEATURES),
-        description: getRandomElementOfArray(TYPES),
+        description: 'описание объекта ' + i,
         photos: getArrayRandomLength(PHOTOS)
       },
       location: {
@@ -112,7 +116,68 @@ var getDemoData = function () {
   return data;
 };
 
+var getTypeApartament = function (type) {
+  var convertType = 'неизвестный тип';
+  if (type === 'flat') {
+    convertType = 'Квартира';
+  }
+  if (type === 'bungalo') {
+    convertType = 'Бунгало';
+  }
+  if (type === 'house') {
+    convertType = 'Дом';
+  }
+  if (type === 'palace') {
+    convertType = 'Дворец';
+  }
+  return convertType;
+};
+
+var fillFutureList = function (currentFeatures, allFeaturesList) {
+  for (var i = 0; i < allFeaturesList.length; i++) {
+    var current = allFeaturesList[i].getAttribute('class').split('--')[1];
+    allFeaturesList[i].style = currentFeatures.indexOf(current) >= 0 ? 'display: block' : 'display: none';
+  }
+};
+
+var fillPhotos = function (photos) {
+  var content = '';
+  photos.forEach(function (photo) {
+    content += '<img src="' + photo + '" class="popup__photo" width="45" height="40" alt="Фотография жилья">' + '\n';
+  });
+  return content;
+};
+
+var createCard = function (dataCard) {
+  var card = cardTemlpate.cloneNode(true);
+  card.querySelector('.popup__avatar').src = dataCard.author.avatar;
+  card.querySelector('.popup__title').textContent = dataCard.offer.title;
+  card.querySelector('.popup__text--address').textContent = dataCard.offer.address;
+  card.querySelector('.popup__text--price').textContent = dataCard.offer.price + '₽/ночь';
+  card.querySelector('.popup__type').textContent = getTypeApartament(dataCard.offer.type);
+  card.querySelector('.popup__text--capacity').textContent = dataCard.offer.rooms + ' комнаты для ' + dataCard.offer.guests + ' гостей';
+  card.querySelector('.popup__text--time').textContent = 'заезд после ' + dataCard.offer.checkin + ', выезд до ' + dataCard.offer.checkout;
+  fillFutureList(dataCard.offer.features, card.querySelectorAll('.popup__features li'));
+  card.querySelector('.popup__description').textContent = dataCard.offer.description;
+  card.querySelector('.popup__photos').innerHTML = fillPhotos(dataCard.offer.photos);
+  return card;
+};
+
+var createCards = function (data) {
+  var fragment = document.createDocumentFragment();
+  data.forEach(function (item) {
+    fragment.appendChild(createCard(item));
+  });
+  return fragment;
+};
+
+var renderCards = function (cards) {
+  mapFilterContainer.before(cards);
+};
+
 var data = getDemoData();
 var pins = createPins(data);
+var cards = createCards([data[0]]);
 activateMap();
 renderPins(pins);
+renderCards(cards);
