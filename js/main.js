@@ -18,6 +18,11 @@ var cardTemlpate = document.querySelector('#card')
 var mapPins = document.querySelector('.map__pins');
 var mapFilterContainer = document.querySelector('.map__filters-container');
 
+var getDeclOfNum = function (number, titles) {
+  var cases = [2, 0, 1, 1, 1, 2];
+  return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
+};
+
 var getAvatarImgPrefixes = function () {
   var pefixes = [];
   for (var i = 1; i <= NUMBER_OF_PINS; i++) {
@@ -116,68 +121,66 @@ var getDemoData = function () {
   return data;
 };
 
-var getTypeApartament = function (type) {
-  var convertType = 'неизвестный тип';
-  if (type === 'flat') {
-    convertType = 'Квартира';
-  }
-  if (type === 'bungalo') {
-    convertType = 'Бунгало';
-  }
-  if (type === 'house') {
-    convertType = 'Дом';
-  }
-  if (type === 'palace') {
-    convertType = 'Дворец';
-  }
-  return convertType;
+var getApartamentType = function (type) {
+  var apartmentTypes = {
+    flat: 'Квартира',
+    bungalo: 'Бунгало',
+    house: 'Дом',
+    palace: 'Дворец'
+  };
+  return apartmentTypes[type] ? apartmentTypes[type] : 'неизвестный тип';
 };
 
-var fillFutureList = function (currentFeatures, allFeaturesList) {
+var fillFeatureList = function (currentFeatures, allFeaturesList) {
   for (var i = 0; i < allFeaturesList.length; i++) {
     var current = allFeaturesList[i].getAttribute('class').split('--')[1];
     allFeaturesList[i].style = currentFeatures.indexOf(current) >= 0 ? 'display: block' : 'display: none';
   }
 };
 
-var fillPhotos = function (photos) {
-  var content = '';
-  photos.forEach(function (photo) {
-    content += '<img src="' + photo + '" class="popup__photo" width="45" height="40" alt="Фотография жилья">' + '\n';
-  });
+var getPhotoList = function (photos) {
+  var content = document.createDocumentFragment();
+  if (photos.length > 0) {
+    var imgPlace = cardTemlpate.querySelector('.popup__photo');
+    photos.forEach(function (photo) {
+      var imgItem = imgPlace.cloneNode(true);
+      imgItem.src = photo;
+      content.appendChild(imgItem);
+    });
+  }
   return content;
 };
 
 var createCard = function (dataCard) {
+  var fragment = document.createDocumentFragment();
   var card = cardTemlpate.cloneNode(true);
   card.querySelector('.popup__avatar').src = dataCard.author.avatar;
   card.querySelector('.popup__title').textContent = dataCard.offer.title;
   card.querySelector('.popup__text--address').textContent = dataCard.offer.address;
   card.querySelector('.popup__text--price').textContent = dataCard.offer.price + '₽/ночь';
-  card.querySelector('.popup__type').textContent = getTypeApartament(dataCard.offer.type);
-  card.querySelector('.popup__text--capacity').textContent = dataCard.offer.rooms + ' комнаты для ' + dataCard.offer.guests + ' гостей';
+  card.querySelector('.popup__type').textContent = getApartamentType(dataCard.offer.type);
+  card.querySelector('.popup__text--capacity').textContent = dataCard.offer.rooms
+    + ' '
+    + getDeclOfNum(dataCard.offer.rooms, ['комната', 'комнаты', 'комнат'])
+    + ' для '
+    + dataCard.offer.guests
+    + ' '
+    + getDeclOfNum(dataCard.offer.guests, ['гостя', 'гостей', 'гостей']);
   card.querySelector('.popup__text--time').textContent = 'заезд после ' + dataCard.offer.checkin + ', выезд до ' + dataCard.offer.checkout;
-  fillFutureList(dataCard.offer.features, card.querySelectorAll('.popup__features li'));
+  fillFeatureList(dataCard.offer.features, card.querySelectorAll('.popup__features li'));
   card.querySelector('.popup__description').textContent = dataCard.offer.description;
-  card.querySelector('.popup__photos').innerHTML = fillPhotos(dataCard.offer.photos);
-  return card;
-};
-
-var createCards = function (data) {
-  var fragment = document.createDocumentFragment();
-  data.forEach(function (item) {
-    fragment.appendChild(createCard(item));
-  });
+  card.querySelector('.popup__photo').replaceWith(getPhotoList(dataCard.offer.photos));
+  fragment.appendChild(card);
   return fragment;
 };
 
-var renderCards = function (cards) {
-  mapFilterContainer.before(cards);
+var renderCard = function (card) {
+  mapFilterContainer.before(card);
 };
 
 var data = getDemoData();
 var pins = createPins(data);
-var cards = createCards([data[0]]);
+var card = createCard(data[0]);
 activateMap();
 renderPins(pins);
-renderCards(cards);
+renderCard(card);
