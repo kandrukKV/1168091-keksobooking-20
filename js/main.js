@@ -10,6 +10,7 @@ var NUMBER_OF_PINS = 8;
 var MIN_VALUE_X = 25;
 var MIN_VALUE_Y = 130;
 var MAX_VALUE_Y = 630;
+var KEY_ENTER = 'Enter';
 var pinTemplate = document.querySelector('#pin')
     .content
     .querySelector('.map__pin');
@@ -54,7 +55,7 @@ var getShuffleArray = function (arr) {
   return copy;
 };
 
-var getDeclarationOfNum = function (number, titles) {
+var getDeclensionOfNouns = function (number, titles) {
   var cases = [2, 0, 1, 1, 1, 2];
   return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
 };
@@ -143,11 +144,11 @@ var createCard = function (dataCard) {
   card.querySelector('.popup__type').textContent = getApartamentType(dataCard.offer.type);
   card.querySelector('.popup__text--capacity').textContent = dataCard.offer.rooms
     + ' '
-    + getDeclarationOfNum(dataCard.offer.rooms, ['комната', 'комнаты', 'комнат'])
+    + getDeclensionOfNouns(dataCard.offer.rooms, ['комната', 'комнаты', 'комнат'])
     + ' для '
     + dataCard.offer.guests
     + ' '
-    + getDeclarationOfNum(dataCard.offer.guests, ['гостя', 'гостей', 'гостей']);
+    + getDeclensionOfNouns(dataCard.offer.guests, ['гостя', 'гостей', 'гостей']);
   card.querySelector('.popup__text--time').textContent = 'заезд после ' + dataCard.offer.checkin + ', выезд до ' + dataCard.offer.checkout;
   fillFeatureList(dataCard.offer.features, card.querySelectorAll('.popup__features li'));
   card.querySelector('.popup__description').textContent = dataCard.offer.description;
@@ -223,7 +224,7 @@ var onGeneralPinMouseDown = function (evt) {
 
 var onGeneralPinEnterPress = function (evt) {
   evt.preventDefault();
-  if (evt.key === 'Enter') {
+  if (evt.key === KEY_ENTER) {
     activatePage();
   }
 };
