@@ -54,7 +54,7 @@ var getShuffleArray = function (arr) {
   return copy;
 };
 
-var getDeclOfNum = function (number, titles) {
+var getDeclarationOfNum = function (number, titles) {
   var cases = [2, 0, 1, 1, 1, 2];
   return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
 };
@@ -143,11 +143,11 @@ var createCard = function (dataCard) {
   card.querySelector('.popup__type').textContent = getApartamentType(dataCard.offer.type);
   card.querySelector('.popup__text--capacity').textContent = dataCard.offer.rooms
     + ' '
-    + getDeclOfNum(dataCard.offer.rooms, ['комната', 'комнаты', 'комнат'])
+    + getDeclarationOfNum(dataCard.offer.rooms, ['комната', 'комнаты', 'комнат'])
     + ' для '
     + dataCard.offer.guests
     + ' '
-    + getDeclOfNum(dataCard.offer.guests, ['гостя', 'гостей', 'гостей']);
+    + getDeclarationOfNum(dataCard.offer.guests, ['гостя', 'гостей', 'гостей']);
   card.querySelector('.popup__text--time').textContent = 'заезд после ' + dataCard.offer.checkin + ', выезд до ' + dataCard.offer.checkout;
   fillFeatureList(dataCard.offer.features, card.querySelectorAll('.popup__features li'));
   card.querySelector('.popup__description').textContent = dataCard.offer.description;
@@ -200,11 +200,11 @@ var activateMap = function (data) {
 var adForm = document.querySelector('.ad-form');
 var adFormFieldsets = document.querySelectorAll('.ad-form fieldset');
 
-var disabledAdForm = function () {
+var disableAdForm = function () {
   adForm.classList.add('ad-form--disabled');
-  for (var i = 0; i < adFormFieldsets.length; i++) {
-    adFormFieldsets[i].disabled = true;
-  }
+  adFormFieldsets.forEach(function (adFormFieldset) {
+    adFormFieldset.disabled = true;
+  });
 };
 
 var activateAdForm = function () {
@@ -216,16 +216,14 @@ var activateAdForm = function () {
 
 var onGeneralPinMouseDown = function (evt) {
   evt.preventDefault();
-  if (typeof evt === 'object') {
-    if (evt.button === 0) {
-      activatePage();
-    }
+  if (evt.button === 0) {
+    activatePage();
   }
 };
 
 var onGeneralPinEnterPress = function (evt) {
   evt.preventDefault();
-  if (evt.keyCode === 13) {
+  if (evt.key === 'Enter') {
     activatePage();
   }
 };
@@ -251,8 +249,8 @@ var setAddress = function (x, y) {
 };
 
 var activatePage = function () {
-  var coord = getCoordinatesGeneralPin();
-  setAddress(coord.x, coord.y);
+  var coordinates = getCoordinatesGeneralPin();
+  setAddress(coordinates.x, coordinates.y);
   activateMap(data);
   activateAdForm();
   mapGeneralPin.removeEventListener('mousedown', onGeneralPinMouseDown);
@@ -260,9 +258,9 @@ var activatePage = function () {
 };
 
 var init = function () {
-  var coord = getCentralCoordinatesGeneralPin();
-  setAddress(coord.x, coord.y);
-  disabledAdForm();
+  var coordinates = getCentralCoordinatesGeneralPin();
+  setAddress(coordinates.x, coordinates.y);
+  disableAdForm();
   mapGeneralPin.addEventListener('mousedown', onGeneralPinMouseDown);
   mapGeneralPin.addEventListener('keydown', onGeneralPinEnterPress);
 };
@@ -272,26 +270,17 @@ var init = function () {
 var roomNumberSelect = document.querySelector('#room_number');
 var capacity = document.querySelector('#capacity');
 
-var isValidateSelects = function (valueSelA, valueSelB) {
-  if (valueSelA === valueSelB) {
-    return true;
+var isValidCapacity = function (valueOfRooms, valueOfCapacity) {
+  if (valueOfRooms === '100' || valueOfCapacity === '0') {
+    return valueOfRooms === '100' && valueOfCapacity === '0';
   }
-  if (valueSelA === '2' && (valueSelB === '1' || valueSelB === '2')) {
-    return true;
-  }
-  if (valueSelA === '3' && (valueSelB === '1' || valueSelB === '2' || valueSelB === '3')) {
-    return true;
-  }
-  if (valueSelA === '100' && valueSelB === '0') {
-    return true;
-  }
-  return false;
+  return parseInt(valueOfRooms, 10) >= parseInt(valueOfCapacity, 10);
 };
 
 roomNumberSelect.addEventListener('change', function () {
   var currentRoomNumber = roomNumberSelect.value;
   var currentCapacity = capacity.value;
-  if (!isValidateSelects(currentRoomNumber, currentCapacity)) {
+  if (!isValidCapacity(currentRoomNumber, currentCapacity)) {
     roomNumberSelect.setCustomValidity('Количество комнат не соответствует количеству гостей');
   } else {
     roomNumberSelect.setCustomValidity('');
@@ -302,7 +291,7 @@ roomNumberSelect.addEventListener('change', function () {
 capacity.addEventListener('change', function () {
   var currentRoomNumber = roomNumberSelect.value;
   var currentCapacity = capacity.value;
-  if (!isValidateSelects(currentRoomNumber, currentCapacity)) {
+  if (!isValidCapacity(currentRoomNumber, currentCapacity)) {
     capacity.setCustomValidity('Количество комнат не соответствует количеству гостей');
   } else {
     capacity.setCustomValidity('');
