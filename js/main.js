@@ -11,6 +11,13 @@ var MIN_VALUE_X = 25;
 var MIN_VALUE_Y = 130;
 var MAX_VALUE_Y = 630;
 var KEY_ENTER = 'Enter';
+var KEY_ESC = 'Escape';
+var MIN_PRICE = {
+  bungalo: 0,
+  flat: 1000,
+  house: 5000,
+  palace: 10000
+};
 var pinTemplate = document.querySelector('#pin')
     .content
     .querySelector('.map__pin');
@@ -169,13 +176,20 @@ var createCard = function (dataCard) {
 };
 
 var renderCard = function (card) {
-  var popaps = document.querySelector('.map__card .popup');
-  if (popaps) {
-    popaps.remove();
-  }
+  removeCard();
   mapFilterContainer.before(card);
+  var btnPopupClose = document.querySelector('.map__card .popup__close');
+  btnPopupClose.addEventListener('click', onBtnClosePopapClick);
+  document.addEventListener('keydown', onBtnClosePopapPressEsc);
 };
 
+var removeCard = function () {
+  var popap = document.querySelector('.map__card');
+  if (popap) {
+    popap.remove();
+  }
+  document.removeEventListener('keydown', onBtnClosePopapPressEsc);
+};
 
 // create pins
 
@@ -203,25 +217,33 @@ var renderPins = function (pins) {
 
 // activate
 
+var onBtnClosePopapClick = function (evt) {
+  evt.preventDefault();
+  removeCard();
+};
+
+var onBtnClosePopapPressEsc = function (evt) {
+  if (evt.key === KEY_ESC) {
+    evt.preventDefault();
+    removeCard();
+  }
+};
+
+var onMapPinsClick = function (evt) {
+  evt.preventDefault();
+  var element = evt.target.closest('button[type=button]');
+  if (element) {
+    var card = createCard(getElementFromDataById(element.id));
+    renderCard(card);
+  }
+};
+
 var activateMap = function (data) {
   var pins = createPins(data);
   var map = document.querySelector('.map');
   map.classList.remove('map--faded');
   renderPins(pins);
-  mapPins.addEventListener('click', function (evt) {
-    evt.preventDefault();
-    var element = evt.target.closest('button[type=button]');
-    if (element) {
-      var card = createCard(getElementFromDataById(element.id));
-      renderCard(card);
-      var btnPopupClose = document.querySelector('.map__card .popup__close');
-      console.log(btnPopupClose);
-      btnPopupClose.addEventListener('click', function (evt) {
-        evt.preventDefault();
-        evt.target.parentElement.remove();
-      });
-    }
-  });
+  mapPins.addEventListener('click', onMapPinsClick);
 };
 
 // disabled/activate form ad
@@ -275,6 +297,7 @@ var getCentralCoordinatesGeneralPin = function () {
 
 var setAddress = function (x, y) {
   inputAddress.value = x + ', ' + y;
+  inputAddress.disabled = true;
 };
 
 var activatePage = function () {
@@ -298,6 +321,11 @@ var init = function () {
 
 var roomNumberSelect = document.querySelector('#room_number');
 var capacity = document.querySelector('#capacity');
+var inputTypeOfHousing = document.querySelector('#type');
+var inputCostOfHousing = document.querySelector('#price');
+var selectTimeIn = document.querySelector('#timein');
+var selectTimeOut = document.querySelector('#timeout');
+var inputTitle = document.querySelector('#title');
 
 var isValidCapacity = function (valueOfRooms, valueOfCapacity) {
   if (valueOfRooms === '100' || valueOfCapacity === '0') {
@@ -325,6 +353,39 @@ capacity.addEventListener('change', function () {
   } else {
     capacity.setCustomValidity('');
     roomNumberSelect.setCustomValidity('');
+  }
+});
+
+inputTypeOfHousing.addEventListener('change', function () {
+  inputCostOfHousing.min = MIN_PRICE[inputTypeOfHousing.value];
+  inputCostOfHousing.placeholder = MIN_PRICE[inputTypeOfHousing.value];
+});
+
+selectTimeIn.addEventListener('change', function () {
+  selectTimeOut.options[selectTimeIn.selectedIndex].selected = true;
+});
+
+selectTimeOut.addEventListener('change', function () {
+  selectTimeIn.options[selectTimeOut.selectedIndex].selected = true;
+});
+
+inputTitle.addEventListener('invalid', function () {
+  if (inputTitle.validity.tooShort) {
+    inputTitle.setCustomValidity('Имя должно состоять минимум из 30-ти символов');
+  } else if (inputTitle.validity.tooLong) {
+    inputTitle.setCustomValidity('Имя не должно превышать 100 символов');
+  } else if (inputTitle.validity.valueMissing) {
+    inputTitle.setCustomValidity('Это обязательное поле');
+  } else {
+    inputTitle.setCustomValidity('');
+  }
+});
+
+inputCostOfHousing.addEventListener('invalid', function () {
+  if (inputTitle.validity.valueMissing) {
+    inputTitle.setCustomValidity('Это обязательное поле');
+  } else {
+    inputTitle.setCustomValidity('');
   }
 });
 
