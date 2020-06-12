@@ -60,6 +60,16 @@ var getDeclensionOfNouns = function (number, titles) {
   return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
 };
 
+var getRandomId = function () {
+  return 'f' + (~~(Math.random() * 1e8)).toString(16);
+};
+
+var getElementFromDataById = function (id) {
+  return data.find(function (item) {
+    return item.id === id;
+  });
+};
+
 // create demo data
 
 var getDemoData = function () {
@@ -68,6 +78,7 @@ var getDemoData = function () {
 
   for (var i = 0; i < NUMBER_OF_PINS; i++) {
     var item = {
+      id: getRandomId(),
       author: {
         avatar: 'img/avatars/user0' + avatarImgPrefixes[i] + '.png'
       },
@@ -158,6 +169,10 @@ var createCard = function (dataCard) {
 };
 
 var renderCard = function (card) {
+  var popaps = document.querySelector('.map__card .popup');
+  if (popaps) {
+    popaps.remove();
+  }
   mapFilterContainer.before(card);
 };
 
@@ -167,6 +182,7 @@ var renderCard = function (card) {
 var createPin = function (pin) {
   var pinElement = pinTemplate.cloneNode(true);
   var pinImg = pinElement.querySelector('img');
+  pinElement.id = pin.id;
   pinElement.style = 'left:' + (pin.location.x + PIN_OFFSET_X) + 'px; ' + 'top:' + (pin.location.y + PIN_OFFSET_Y) + 'px;';
   pinImg.src = pin.author.avatar;
   pinImg.alt = pin.offer.title;
@@ -192,8 +208,20 @@ var activateMap = function (data) {
   var map = document.querySelector('.map');
   map.classList.remove('map--faded');
   renderPins(pins);
-  var card = createCard(data[0]);
-  renderCard(card);
+  mapPins.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    var element = evt.target.closest('button[type=button]');
+    if (element) {
+      var card = createCard(getElementFromDataById(element.id));
+      renderCard(card);
+      var btnPopupClose = document.querySelector('.map__card .popup__close');
+      console.log(btnPopupClose);
+      btnPopupClose.addEventListener('click', function (evt) {
+        evt.preventDefault();
+        evt.target.parentElement.remove();
+      });
+    }
+  });
 };
 
 // disabled/activate form ad
