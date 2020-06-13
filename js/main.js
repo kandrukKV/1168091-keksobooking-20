@@ -26,6 +26,7 @@ var cardTemlpate = document.querySelector('#card')
     .querySelector('.map__card');
 var mapPins = document.querySelector('.map__pins');
 var mapFilterContainer = document.querySelector('.map__filters-container');
+var map = document.querySelector('.map');
 
 
 // service functions
@@ -67,12 +68,8 @@ var getDeclensionOfNouns = function (number, titles) {
   return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
 };
 
-var getRandomId = function () {
-  return 'f' + (~~(Math.random() * 1e8)).toString(16);
-};
-
-var getElementFromDataById = function (id) {
-  return data.find(function (item) {
+var getElementFromDataById = function (arr, id) {
+  return arr.find(function (item) {
     return item.id === id;
   });
 };
@@ -85,7 +82,7 @@ var getDemoData = function () {
 
   for (var i = 0; i < NUMBER_OF_PINS; i++) {
     var item = {
-      id: getRandomId(),
+      id: 'pin' + i,
       author: {
         avatar: 'img/avatars/user0' + avatarImgPrefixes[i] + '.png'
       },
@@ -177,18 +174,18 @@ var createCard = function (dataCard) {
 
 var renderCard = function (card) {
   removeCard();
-  mapFilterContainer.before(card);
+  map.insertBefore(card, mapFilterContainer);
   var btnPopupClose = document.querySelector('.map__card .popup__close');
-  btnPopupClose.addEventListener('click', onBtnClosePopapClick);
-  document.addEventListener('keydown', onBtnClosePopapPressEsc);
+  btnPopupClose.addEventListener('click', onBtnCloseCardClick);
+  document.addEventListener('keydown', onBtnCloseCardPressEsc);
 };
 
 var removeCard = function () {
-  var popap = document.querySelector('.map__card');
-  if (popap) {
-    popap.remove();
+  var card = document.querySelector('.map__card');
+  if (card) {
+    card.remove();
   }
-  document.removeEventListener('keydown', onBtnClosePopapPressEsc);
+  document.removeEventListener('keydown', onBtnCloseCardPressEsc);
 };
 
 // create pins
@@ -196,7 +193,7 @@ var removeCard = function () {
 var createPin = function (pin) {
   var pinElement = pinTemplate.cloneNode(true);
   var pinImg = pinElement.querySelector('img');
-  pinElement.id = pin.id;
+  pinElement.setAttribute('data-card', pin.id);
   pinElement.style = 'left:' + (pin.location.x + PIN_OFFSET_X) + 'px; ' + 'top:' + (pin.location.y + PIN_OFFSET_Y) + 'px;';
   pinImg.src = pin.author.avatar;
   pinImg.alt = pin.offer.title;
@@ -217,12 +214,12 @@ var renderPins = function (pins) {
 
 // activate
 
-var onBtnClosePopapClick = function (evt) {
+var onBtnCloseCardClick = function (evt) {
   evt.preventDefault();
   removeCard();
 };
 
-var onBtnClosePopapPressEsc = function (evt) {
+var onBtnCloseCardPressEsc = function (evt) {
   if (evt.key === KEY_ESC) {
     evt.preventDefault();
     removeCard();
@@ -233,14 +230,13 @@ var onMapPinsClick = function (evt) {
   evt.preventDefault();
   var element = evt.target.closest('button[type=button]');
   if (element) {
-    var card = createCard(getElementFromDataById(element.id));
+    var card = createCard(getElementFromDataById(data, element.dataset.card));
     renderCard(card);
   }
 };
 
 var activateMap = function (data) {
   var pins = createPins(data);
-  var map = document.querySelector('.map');
   map.classList.remove('map--faded');
   renderPins(pins);
   mapPins.addEventListener('click', onMapPinsClick);
