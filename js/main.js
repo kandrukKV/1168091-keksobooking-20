@@ -11,6 +11,13 @@ var MIN_VALUE_X = 25;
 var MIN_VALUE_Y = 130;
 var MAX_VALUE_Y = 630;
 var KEY_ENTER = 'Enter';
+var KEY_ESC = 'Escape';
+var MIN_PRICE = {
+  bungalo: 0,
+  flat: 1000,
+  house: 5000,
+  palace: 10000
+};
 var pinTemplate = document.querySelector('#pin')
     .content
     .querySelector('.map__pin');
@@ -19,6 +26,7 @@ var cardTemlpate = document.querySelector('#card')
     .querySelector('.map__card');
 var mapPins = document.querySelector('.map__pins');
 var mapFilterContainer = document.querySelector('.map__filters-container');
+var map = document.querySelector('.map');
 
 
 // service functions
@@ -60,6 +68,12 @@ var getDeclensionOfNouns = function (number, titles) {
   return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
 };
 
+var getElementFromDataById = function (arr, id) {
+  return arr.find(function (item) {
+    return item.id === id;
+  });
+};
+
 // create demo data
 
 var getDemoData = function () {
@@ -68,6 +82,7 @@ var getDemoData = function () {
 
   for (var i = 0; i < NUMBER_OF_PINS; i++) {
     var item = {
+      id: 'pin' + i,
       author: {
         avatar: 'img/avatars/user0' + avatarImgPrefixes[i] + '.png'
       },
@@ -158,15 +173,27 @@ var createCard = function (dataCard) {
 };
 
 var renderCard = function (card) {
-  mapFilterContainer.before(card);
+  removeCard();
+  map.insertBefore(card, mapFilterContainer);
+  var btnPopupClose = document.querySelector('.map__card .popup__close');
+  btnPopupClose.addEventListener('click', onBtnCloseCardClick);
+  document.addEventListener('keydown', onBtnCloseCardPressEsc);
 };
 
+var removeCard = function () {
+  var card = document.querySelector('.map__card');
+  if (card) {
+    card.remove();
+  }
+  document.removeEventListener('keydown', onBtnCloseCardPressEsc);
+};
 
 // create pins
 
 var createPin = function (pin) {
   var pinElement = pinTemplate.cloneNode(true);
   var pinImg = pinElement.querySelector('img');
+  pinElement.setAttribute('data-card', pin.id);
   pinElement.style = 'left:' + (pin.location.x + PIN_OFFSET_X) + 'px; ' + 'top:' + (pin.location.y + PIN_OFFSET_Y) + 'px;';
   pinImg.src = pin.author.avatar;
   pinImg.alt = pin.offer.title;
@@ -187,13 +214,32 @@ var renderPins = function (pins) {
 
 // activate
 
+var onBtnCloseCardClick = function (evt) {
+  evt.preventDefault();
+  removeCard();
+};
+
+var onBtnCloseCardPressEsc = function (evt) {
+  if (evt.key === KEY_ESC) {
+    evt.preventDefault();
+    removeCard();
+  }
+};
+
+var onMapPinsClick = function (evt) {
+  evt.preventDefault();
+  var element = evt.target.closest('button[type=button]');
+  if (element) {
+    var card = createCard(getElementFromDataById(data, element.dataset.card));
+    renderCard(card);
+  }
+};
+
 var activateMap = function (data) {
   var pins = createPins(data);
-  var map = document.querySelector('.map');
   map.classList.remove('map--faded');
   renderPins(pins);
-  var card = createCard(data[0]);
-  renderCard(card);
+  mapPins.addEventListener('click', onMapPinsClick);
 };
 
 // disabled/activate form ad
@@ -247,6 +293,7 @@ var getCentralCoordinatesGeneralPin = function () {
 
 var setAddress = function (x, y) {
   inputAddress.value = x + ', ' + y;
+  inputAddress.disabled = true;
 };
 
 var activatePage = function () {
@@ -270,6 +317,11 @@ var init = function () {
 
 var roomNumberSelect = document.querySelector('#room_number');
 var capacity = document.querySelector('#capacity');
+var inputTypeOfHousing = document.querySelector('#type');
+var inputCostOfHousing = document.querySelector('#price');
+var selectTimeIn = document.querySelector('#timein');
+var selectTimeOut = document.querySelector('#timeout');
+var inputTitle = document.querySelector('#title');
 
 var isValidCapacity = function (valueOfRooms, valueOfCapacity) {
   if (valueOfRooms === '100' || valueOfCapacity === '0') {
@@ -297,6 +349,39 @@ capacity.addEventListener('change', function () {
   } else {
     capacity.setCustomValidity('');
     roomNumberSelect.setCustomValidity('');
+  }
+});
+
+inputTypeOfHousing.addEventListener('change', function () {
+  inputCostOfHousing.min = MIN_PRICE[inputTypeOfHousing.value];
+  inputCostOfHousing.placeholder = MIN_PRICE[inputTypeOfHousing.value];
+});
+
+selectTimeIn.addEventListener('change', function () {
+  selectTimeOut.options[selectTimeIn.selectedIndex].selected = true;
+});
+
+selectTimeOut.addEventListener('change', function () {
+  selectTimeIn.options[selectTimeOut.selectedIndex].selected = true;
+});
+
+inputTitle.addEventListener('invalid', function () {
+  if (inputTitle.validity.tooShort) {
+    inputTitle.setCustomValidity('Имя должно состоять минимум из 30-ти символов');
+  } else if (inputTitle.validity.tooLong) {
+    inputTitle.setCustomValidity('Имя не должно превышать 100 символов');
+  } else if (inputTitle.validity.valueMissing) {
+    inputTitle.setCustomValidity('Это обязательное поле');
+  } else {
+    inputTitle.setCustomValidity('');
+  }
+});
+
+inputCostOfHousing.addEventListener('invalid', function () {
+  if (inputTitle.validity.valueMissing) {
+    inputTitle.setCustomValidity('Это обязательное поле');
+  } else {
+    inputTitle.setCustomValidity('');
   }
 });
 
