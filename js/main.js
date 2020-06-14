@@ -6,14 +6,14 @@
   var mainPin = document.querySelector('.map__pin--main');
   var data = window.data;
 
-  var onGeneralPinMouseDown = function (evt) {
+  var onMainPinMouseDown = function (evt) {
     evt.preventDefault();
     if (evt.button === 0) {
       activatePage();
     }
   };
 
-  var onGeneralPinEnterPress = function (evt) {
+  var onMainPinEnterPress = function (evt) {
     evt.preventDefault();
     if (evt.key === KEY_ENTER) {
       activatePage();
@@ -39,13 +39,13 @@
     window.form.setAddress(coordinates.x, coordinates.y);
     window.map.activateMap(data);
     window.form.activateAdForm();
-    mainPin.removeEventListener('mousedown', onGeneralPinMouseDown);
-    mainPin.removeEventListener('keydown', onGeneralPinEnterPress);
+    mainPin.removeEventListener('mousedown', onMainPinMouseDown);
+    mainPin.removeEventListener('keydown', onMainPinEnterPress);
   };
 
   var coordinates = getCentralCoordinatesMainPin();
   window.form.setAddress(coordinates.x, coordinates.y);
   window.form.disableAdForm();
-  mainPin.addEventListener('mousedown', onGeneralPinMouseDown);
-  mainPin.addEventListener('keydown', onGeneralPinEnterPress);
+  mainPin.addEventListener('mousedown', onMainPinMouseDown);
+  mainPin.addEventListener('keydown', onMainPinEnterPress);
 })();
