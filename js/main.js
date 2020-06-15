@@ -38,8 +38,8 @@
   var activatePage = function () {
     var coordinates = getCoordinatesMainPin();
     window.form.setAddress(coordinates.x, coordinates.y);
-    window.map.activateMap(data);
-    window.form.activateAdForm();
+    window.map.activate(data);
+    window.form.activate();
     mainPin.removeEventListener('mousedown', onMainPinMouseDown);
     mainPin.removeEventListener('keydown', onMainPinEnterPress);
     moveMainPin();
@@ -47,7 +47,7 @@
 
   var coordinates = getCentralCoordinatesMainPin();
   window.form.setAddress(coordinates.x, coordinates.y);
-  window.form.disableAdForm();
+  window.form.disable();
   mainPin.addEventListener('mousedown', onMainPinMouseDown);
   mainPin.addEventListener('keydown', onMainPinEnterPress);
 

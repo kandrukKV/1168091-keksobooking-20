@@ -1,6 +1,6 @@
 'use strict';
 
-window.form = (function () {
+(function () {
   var MIN_PRICE = {
     bungalo: 0,
     flat: 1000,
@@ -80,22 +80,28 @@ window.form = (function () {
     }
   });
 
-  return {
-    disableAdForm: function () {
-      adForm.classList.add('ad-form--disabled');
-      adFormFieldsets.forEach(function (adFormFieldset) {
-        adFormFieldset.disabled = true;
-      });
-    },
-    activateAdForm: function () {
-      adForm.classList.remove('ad-form--disabled');
-      for (var i = 0; i < adFormFieldsets.length; i++) {
-        adFormFieldsets[i].disabled = false;
-      }
-    },
-    setAddress: function (x, y) {
-      inputAddress.value = x + ', ' + y;
-      inputAddress.disabled = true;
+  var disableAdForm = function () {
+    adForm.classList.add('ad-form--disabled');
+    adFormFieldsets.forEach(function (adFormFieldset) {
+      adFormFieldset.disabled = true;
+    });
+  };
+
+  var activateAdForm = function () {
+    adForm.classList.remove('ad-form--disabled');
+    for (var i = 0; i < adFormFieldsets.length; i++) {
+      adFormFieldsets[i].disabled = false;
     }
+  };
+
+  var setAddress = function (x, y) {
+    inputAddress.value = x + ', ' + y;
+    inputAddress.disabled = true;
+  };
+
+  window.form = {
+    disable: disableAdForm,
+    activate: activateAdForm,
+    setAddress: setAddress
   };
 })();

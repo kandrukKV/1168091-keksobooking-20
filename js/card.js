@@ -1,6 +1,6 @@
 'use strict';
 
-window.card = (function () {
+(function () {
   var KEY_ESC = 'Escape';
   var areaMap = document.querySelector('.map');
   var mapFilterContainer = document.querySelector('.map__filters-container');
@@ -86,14 +86,17 @@ window.card = (function () {
     return fragment;
   };
 
-  return {
-    render: function (dataCard) {
-      removeCard();
-      var card = createCard(dataCard);
-      areaMap.insertBefore(card, mapFilterContainer);
-      var btnPopupClose = document.querySelector('.map__card .popup__close');
-      btnPopupClose.addEventListener('click', onBtnCloseCardClick);
-      document.addEventListener('keydown', onBtnCloseCardPressEsc);
-    }
+  var renderCard = function (dataCard) {
+    removeCard();
+    var card = createCard(dataCard);
+    areaMap.insertBefore(card, mapFilterContainer);
+    var btnPopupClose = document.querySelector('.map__card .popup__close');
+    btnPopupClose.addEventListener('click', onBtnCloseCardClick);
+    document.addEventListener('keydown', onBtnCloseCardPressEsc);
   };
+
+  window.card = {
+    render: renderCard
+  };
+
 })();

@@ -1,6 +1,6 @@
 'use strict';
 
-window.map = (function () {
+(function () {
   var areaMap = document.querySelector('.map');
   var mapPins = document.querySelector('.map__pins');
 
@@ -10,17 +10,20 @@ window.map = (function () {
     });
   };
 
-  return {
-    activateMap: function (data) {
-      areaMap.classList.remove('map--faded');
-      window.pins.render(data, mapPins);
-      mapPins.addEventListener('click', function (evt) {
-        evt.preventDefault();
-        var element = evt.target.closest('button[type=button]');
-        if (element) {
-          window.card.render(getElementFromDataById(data, element.dataset.card));
-        }
-      });
-    }
+  var activateMap = function (data) {
+    areaMap.classList.remove('map--faded');
+    window.pins.render(data, mapPins);
+    mapPins.addEventListener('click', function (evt) {
+      evt.preventDefault();
+      var element = evt.target.closest('button[type=button]');
+      if (element) {
+        window.card.render(getElementFromDataById(data, element.dataset.card));
+      }
+    });
   };
+
+  window.map = {
+    activate: activateMap
+  };
+
 })();

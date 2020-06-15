@@ -1,6 +1,6 @@
 'use strict';
 
-window.pins = (function () {
+(function () {
   var PIN_OFFSET_X = -25;
   var PIN_OFFSET_Y = -70;
   var pinTemplate = document.querySelector('#pin')
@@ -25,10 +25,12 @@ window.pins = (function () {
     return fragment;
   };
 
-  return {
-    render: function (data, mapPins) {
-      var pins = createPins(data);
-      mapPins.appendChild(pins);
-    }
+  var renderPins = function (data, mapPins) {
+    var pins = createPins(data);
+    mapPins.appendChild(pins);
+  };
+
+  window.pins = {
+    render: renderPins
   };
 })();
