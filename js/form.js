@@ -94,8 +94,8 @@
     }
   };
 
-  var setAddress = function (x, y) {
-    inputAddress.value = x + ', ' + y;
+  var setAddress = function (position) {
+    inputAddress.value = position.x + ', ' + position.y;
     inputAddress.disabled = true;
   };
 
