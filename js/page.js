@@ -4,9 +4,8 @@
   var data = window.data;
 
   var activatePage = function () {
-    var coordinates = window.mainPin.getCoordinates();
-    window.form.setAddress(coordinates);
     window.map.activate(data);
+    window.form.setAddress(window.mainPin.getCoordinates());
     window.form.activate();
   };
 
