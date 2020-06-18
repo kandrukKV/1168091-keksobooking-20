@@ -1,12 +1,14 @@
 'use strict';
 
 (function () {
-  var data = window.data;
-
   var activatePage = function () {
-    window.map.activate(data);
+    window.load('https://javascript.pages.academy/keksobooking/data', window.map.activate, showActivationError);
     window.form.setAddress(window.mainPin.getCoordinates());
     window.form.activate();
+  };
+
+  var showActivationError = function () {
+    // console.log(error);
   };
 
   window.page = {
