@@ -5,7 +5,7 @@
   var MIN_VALUE_Y = 130;
   var MAX_VALUE_Y = 630;
   var KEY_ENTER = 'Enter';
-  var MOUSE_KEY_NUMBER = 0;
+  var LEFT_MOUSE_BUTTON = 0;
   var moveArea = document.querySelector('.map__pins');
   var mainPin = document.querySelector('.map__pin--main');
   var areaMap = document.querySelector('.map');
@@ -21,7 +21,7 @@
 
   var onMainPinMouseDown = function (evt) {
     evt.preventDefault();
-    if (evt.button !== MOUSE_KEY_NUMBER) {
+    if (evt.button !== LEFT_MOUSE_BUTTON) {
       return;
     }
 
