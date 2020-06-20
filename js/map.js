@@ -12,10 +12,11 @@
 
   var activateMap = function (data) {
     areaMap.classList.remove('map--faded');
-    window.pins.render(data.map(function (item, i) {
+    var modifiedData = data.map(function (item, i) {
       item.id = 'pin' + i;
       return item;
-    }), mapPins);
+    });
+    window.pins.render(modifiedData, mapPins);
     mapPins.addEventListener('click', function (evt) {
       evt.preventDefault();
       var element = evt.target.closest('button[type=button]');

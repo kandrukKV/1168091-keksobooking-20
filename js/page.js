@@ -1,18 +1,20 @@
 'use strict';
 
 (function () {
+  var DATA_URL = 'https://javascript.pages.academy/keksobooking/data';
   var activatePage = function () {
-    window.load('https://javascript.pages.academy/keksobooking/data', window.map.activate, showActivationError);
+    window.load(DATA_URL, window.map.activate, showStatusMessage);
     window.form.setAddress(window.mainPin.getCoordinates());
     window.form.activate();
   };
 
-  var showActivationError = function () {
-    // console.log(error);
+  var showStatusMessage = function () {
+    // эту функцию я опишу в следующем ДЗ
   };
 
   window.page = {
-    activate: activatePage
+    activate: activatePage,
+    showStatusMessage: showStatusMessage
   };
 
 })();
