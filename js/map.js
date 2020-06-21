@@ -26,8 +26,18 @@
     });
   };
 
+  var disableMap = function () {
+    var pins = document.querySelectorAll('.map__pins button[type=button]');
+    pins.forEach(function (pin) {
+      pin.remove();
+    });
+    document.querySelector('.map__pin--main').style = 'left: 570px; top: 375px;';
+    areaMap.classList.add('map--faded');
+  };
+
   window.map = {
-    activate: activateMap
+    activate: activateMap,
+    disable: disableMap
   };
 
 })();
