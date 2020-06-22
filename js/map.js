@@ -27,7 +27,7 @@
   };
 
   var disableMap = function () {
-    var pins = document.querySelectorAll('.map__pins button[type=button]');
+    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     pins.forEach(function (pin) {
       pin.remove();
     });
