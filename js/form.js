@@ -47,6 +47,13 @@
     }
   });
 
+  adForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    var myFormData = new FormData(adForm);
+    myFormData.append('address', inputAddress.value);
+    window.upload(myFormData, window.page.showSuccessMessage, window.page.showErrorMessage);
+  });
+
   inputTypeOfHousing.addEventListener('change', function () {
     inputCostOfHousing.min = MIN_PRICE[inputTypeOfHousing.value];
     inputCostOfHousing.placeholder = MIN_PRICE[inputTypeOfHousing.value];
@@ -82,6 +89,7 @@
 
   var disableAdForm = function () {
     adForm.classList.add('ad-form--disabled');
+    adForm.reset();
     adFormFieldsets.forEach(function (adFormFieldset) {
       adFormFieldset.disabled = true;
     });
