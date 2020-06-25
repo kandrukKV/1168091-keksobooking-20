@@ -24,30 +24,40 @@
   };
 
   var getFilterState = function () {
-    var filrerState = {
+    var filterState = {
       features: []
     };
     filterSelects.forEach(function (item) {
-      filrerState[item.name] = item.value;
+      filterState[item.name] = item.value;
     });
     filterCheckboxes.forEach(function (item) {
       if (item.checked) {
-        filrerState.features.push(item.value);
+        filterState.features.push(item.value);
       }
     });
 
-    return filrerState;
+    return filterState;
   };
 
-  filterForm.addEventListener('change', function (evt) {
+  var onFilterChange = function (evt) {
     evt.preventDefault();
     window.card.remove();
     window.pins.remove();
     window.pins.render(getFilterData(window.data));
-  });
+  };
+
+  var activateFilter = function () {
+    filterForm.addEventListener('change', onFilterChange);
+  };
+
+  var disableFilter = function () {
+    filterForm.removeEventListener('change', onFilterChange);
+  };
 
   window.filter = {
-    getData: getFilterData
+    getData: getFilterData,
+    activate: activateFilter,
+    disable: disableFilter
   };
 
 })();

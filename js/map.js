@@ -21,6 +21,7 @@
     var filterData = window.filter.getData(window.data);
 
     window.pins.render(filterData);
+    window.filter.activate();
     mapPins.addEventListener('click', function (evt) {
       evt.preventDefault();
       var element = evt.target.closest('button[type=button]');
@@ -33,6 +34,7 @@
   var disableMap = function () {
     window.pins.remove();
     window.mainPin.setToCenter();
+    window.filter.disable();
     areaMap.classList.add('map--faded');
   };
 
