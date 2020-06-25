@@ -2,6 +2,7 @@
 
 (function () {
   var ELEMENT_OFFSET_Y = 22;
+  var MAIN_PIN_CENTRAL_COORDINATES = 'left: 570px; top: 375px;';
   var MIN_VALUE_Y = 130;
   var MAX_VALUE_Y = 630;
   var KEY_ENTER = 'Enter';
@@ -17,6 +18,10 @@
       x: parseInt(mainPin.style.left, 10) + Math.ceil(mainPin.offsetWidth / 2),
       y: parseInt(mainPin.style.top, 10) + annex
     };
+  };
+
+  var mainPinSetToCenter = function () {
+    mainPin.style = MAIN_PIN_CENTRAL_COORDINATES;
   };
 
   var onMainPinMouseDown = function (evt) {
@@ -98,6 +103,7 @@
 
   window.mainPin = {
     getCoordinates: getMainPinCoordinates,
+    setToCenter: mainPinSetToCenter
   };
 
 })();

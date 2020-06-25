@@ -3,6 +3,7 @@
 (function () {
   var PIN_OFFSET_X = -25;
   var PIN_OFFSET_Y = -70;
+  var mapPins = document.querySelector('.map__pins');
   var pinTemplate = document.querySelector('#pin')
   .content
   .querySelector('.map__pin');
@@ -25,12 +26,20 @@
     return fragment;
   };
 
-  var renderPins = function (data, mapPins) {
+  var renderPins = function (data) {
     var pins = createPins(data);
     mapPins.appendChild(pins);
   };
 
+  var removePins = function () {
+    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    pins.forEach(function (pin) {
+      pin.remove();
+    });
+  };
+
   window.pins = {
-    render: renderPins
+    render: renderPins,
+    remove: removePins
   };
 })();
