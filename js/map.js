@@ -12,11 +12,15 @@
 
   var activateMap = function (data) {
     areaMap.classList.remove('map--faded');
-    var modifiedData = data.map(function (item, i) {
+
+    window.data = data.map(function (item, i) {
       item.id = 'pin' + i;
       return item;
     });
-    window.pins.render(modifiedData, mapPins);
+
+    var filterData = window.filter.getData(window.data);
+
+    window.pins.render(filterData);
     mapPins.addEventListener('click', function (evt) {
       evt.preventDefault();
       var element = evt.target.closest('button[type=button]');
@@ -27,11 +31,8 @@
   };
 
   var disableMap = function () {
-    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    pins.forEach(function (pin) {
-      pin.remove();
-    });
-    document.querySelector('.map__pin--main').style = 'left: 570px; top: 375px;';
+    window.pins.remove();
+    window.mainPin.setToCenter();
     areaMap.classList.add('map--faded');
   };
 
