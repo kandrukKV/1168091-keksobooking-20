@@ -15,85 +15,70 @@
   };
 
   var filterForm = document.querySelector('.map__filters');
+  var housingType = filterForm.querySelector('#housing-type');
+  var housingPriceType = filterForm.querySelector('#housing-price');
+  var housingNumberOfRooms = filterForm.querySelector('#housing-rooms');
+  var housingNumberOfGuest = filterForm.querySelector('#housing-guests');
 
-  var filterByTypeOfHousing = function (arr) {
-    var type = filterForm.querySelector('#housing-type').value;
-    if (type === ANY_TYPE) {
-      return arr;
-    }
-    return arr.filter(function (item) {
-      return item.offer.type === type;
-    });
+  var isAnyType = function (type) {
+    return type === ANY_TYPE;
   };
 
-  var filterByPriceOfHousing = function (arr) {
-    var priceType = filterForm.querySelector('#housing-price').value;
+  var filterByTypeOfHousing = function (dataItem) {
+    var type = housingType.value;
+    return isAnyType(type) || dataItem.offer.type === type;
+  };
 
-    switch (priceType) {
+  var filterByPriceOfHousing = function (dataItem) {
+    switch (housingPriceType.value) {
       case HousingPriceType.LOW:
-        return arr.filter(function (item) {
-          return parseInt(item.offer.price, 10) < Price.MIDDLE;
-        });
+        return parseInt(dataItem.offer.price, 10) < Price.MIDDLE;
       case HousingPriceType.MIDDLE:
-        return arr.filter(function (item) {
-          return parseInt(item.offer.price, 10) >= Price.MIDDLE && parseInt(item.offer.price, 10) < Price.HIGH;
-        });
+        return parseInt(dataItem.offer.price, 10) >= Price.MIDDLE && parseInt(dataItem.offer.price, 10) < Price.HIGH;
       case HousingPriceType.HIGH:
-        return arr.filter(function (item) {
-          return parseInt(item.offer.price, 10) >= Price.HIGH;
-        });
+        return parseInt(dataItem.offer.price, 10) >= Price.HIGH;
       default:
-        return arr;
+        return true;
     }
   };
 
-  var filterByRoomsOfHousing = function (arr) {
-    var numberOfRooms = filterForm.querySelector('#housing-rooms').value;
-    if (numberOfRooms === ANY_TYPE) {
-      return arr;
-    }
-    return arr.filter(function (item) {
-      return String(item.offer.rooms) === numberOfRooms;
-    });
+  var filterByRoomsOfHousing = function (dataItem) {
+    var numberOfRooms = housingNumberOfRooms.value;
+    return isAnyType(numberOfRooms) || String(dataItem.offer.rooms) === numberOfRooms;
   };
 
-  var filterByGuestsOfHousing = function (arr) {
-    var numberOfGuests = filterForm.querySelector('#housing-guests').value;
-    if (numberOfGuests === ANY_TYPE) {
-      return arr;
-    }
-    return arr.filter(function (item) {
-      return String(item.offer.guests) === numberOfGuests;
-    });
+  var filterByGuestsOfHousing = function (dataItem) {
+    var numberOfGuests = housingNumberOfGuest.value;
+    return isAnyType(numberOfGuests) || String(dataItem.offer.guests) === numberOfGuests;
   };
 
-  var filterByFeaturesOfHousing = function (arr) {
+  var filterByFeaturesOfHousing = function (dataItem) {
     var features = filterForm.querySelectorAll('input:checked');
     if (features.length) {
-      features.forEach(function (item) {
-        arr = arr.filter(function (el) {
-          return el.offer.features.indexOf(item.value) !== -1;
-        });
-      });
+      for (var i = 0; i < features.length; i++) {
+        if (dataItem.offer.features.indexOf(features[i].value) === -1) {
+          return false;
+        }
+      }
     }
-    return arr;
+    return true;
   };
 
   var setLimitOutput = function (arr, limit) {
-    return arr.length > limit ? arr.slice(limit) : arr;
+    return arr.length > limit ? arr.slice(0, limit) : arr;
   };
 
   var getFilterData = function (data) {
-    var filterData = data;
 
-    filterData = filterByTypeOfHousing(filterData);
-    filterData = filterByPriceOfHousing(filterData);
-    filterData = filterByRoomsOfHousing(filterData);
-    filterData = filterByGuestsOfHousing(filterData);
-    filterData = filterByFeaturesOfHousing(filterData);
-    filterData = setLimitOutput(filterData, MAX_NUMBER_OF_PINS);
+    var filterData = data.filter(function (item) {
+      return filterByTypeOfHousing(item)
+              && filterByPriceOfHousing(item)
+              && filterByRoomsOfHousing(item)
+              && filterByGuestsOfHousing(item)
+              && filterByFeaturesOfHousing(item);
+    });
 
-    return filterData;
+    return setLimitOutput(filterData, MAX_NUMBER_OF_PINS);
   };
 
   var lastTimeout;
