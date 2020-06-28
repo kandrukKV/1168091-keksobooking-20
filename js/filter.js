@@ -15,73 +15,85 @@
   };
 
   var filterForm = document.querySelector('.map__filters');
-  var filterSelects = filterForm.querySelectorAll('select');
-  var filterCheckboxes = filterForm.querySelectorAll('input');
 
-  var getFilterData = function (data) {
-    var filterState = getFilterState();
-    var filterData = data;
-
-    var verifyOption = function (filterStateOption, dataOption) {
-      if (filterState[filterStateOption] !== ANY_TYPE) {
-        filterData = filterData.filter(function (item) {
-          return String(item.offer[dataOption]) === String(filterState[filterStateOption]);
-        });
-      }
-    };
-
-    verifyOption('housing-type', 'type');
-    verifyOption('housing-rooms', 'rooms');
-    verifyOption('housing-guests', 'guests');
-
-    if (filterState['housing-price'] !== ANY_TYPE) {
-      switch (filterState['housing-price']) {
-        case HousingPriceType.LOW:
-          filterData = filterData.filter(function (item) {
-            return parseInt(item.offer.price, 10) < Price.MIDDLE;
-          });
-          break;
-        case HousingPriceType.MIDDLE:
-          filterData = filterData.filter(function (item) {
-            return parseInt(item.offer.price, 10) >= Price.MIDDLE && parseInt(item.offer.price, 10) < Price.HIGH;
-          });
-          break;
-        case HousingPriceType.HIGH:
-          filterData = filterData.filter(function (item) {
-            return parseInt(item.offer.price, 10) >= Price.HIGH;
-          });
-          break;
-      }
+  var filterByTypeOfHousing = function (arr) {
+    var type = filterForm.querySelector('#housing-type').value;
+    if (type === ANY_TYPE) {
+      return arr;
     }
+    return arr.filter(function (item) {
+      return item.offer.type === type;
+    });
+  };
 
-    if (filterState['features'].length) {
-      filterState['features'].forEach(function (item) {
-        filterData = filterData.filter(function (el) {
-          return el.offer.features.indexOf(item) !== -1;
+  var filterByPriceOfHousing = function (arr) {
+    var priceType = filterForm.querySelector('#housing-price').value;
+
+    switch (priceType) {
+      case HousingPriceType.LOW:
+        return arr.filter(function (item) {
+          return parseInt(item.offer.price, 10) < Price.MIDDLE;
+        });
+      case HousingPriceType.MIDDLE:
+        return arr.filter(function (item) {
+          return parseInt(item.offer.price, 10) >= Price.MIDDLE && parseInt(item.offer.price, 10) < Price.HIGH;
+        });
+      case HousingPriceType.HIGH:
+        return arr.filter(function (item) {
+          return parseInt(item.offer.price, 10) >= Price.HIGH;
+        });
+      default:
+        return arr;
+    }
+  };
+
+  var filterByRoomsOfHousing = function (arr) {
+    var numberOfRooms = filterForm.querySelector('#housing-rooms').value;
+    if (numberOfRooms === ANY_TYPE) {
+      return arr;
+    }
+    return arr.filter(function (item) {
+      return String(item.offer.rooms) === numberOfRooms;
+    });
+  };
+
+  var filterByGuestsOfHousing = function (arr) {
+    var numberOfGuests = filterForm.querySelector('#housing-guests').value;
+    if (numberOfGuests === ANY_TYPE) {
+      return arr;
+    }
+    return arr.filter(function (item) {
+      return String(item.offer.guests) === numberOfGuests;
+    });
+  };
+
+  var filterByFeaturesOfHousing = function (arr) {
+    var features = filterForm.querySelectorAll('input:checked');
+    if (features.length) {
+      features.forEach(function (item) {
+        arr = arr.filter(function (el) {
+          return el.offer.features.indexOf(item.value) !== -1;
         });
       });
     }
-
-    if (filterData.length > MAX_NUMBER_OF_PINS) {
-      return filterData.slice(MAX_NUMBER_OF_PINS);
-    }
-
-    return filterData;
+    return arr;
   };
 
-  var getFilterState = function () {
-    var filterState = {
-      features: []
-    };
-    filterSelects.forEach(function (item) {
-      filterState[item.name] = item.value;
-    });
-    filterCheckboxes.forEach(function (item) {
-      if (item.checked) {
-        filterState.features.push(item.value);
-      }
-    });
-    return filterState;
+  var setLimitOutput = function (arr, limit) {
+    return arr.length > limit ? arr.slice(limit) : arr;
+  };
+
+  var getFilterData = function (data) {
+    var filterData = data;
+
+    filterData = filterByTypeOfHousing(filterData);
+    filterData = filterByPriceOfHousing(filterData);
+    filterData = filterByRoomsOfHousing(filterData);
+    filterData = filterByGuestsOfHousing(filterData);
+    filterData = filterByFeaturesOfHousing(filterData);
+    filterData = setLimitOutput(filterData, MAX_NUMBER_OF_PINS);
+
+    return filterData;
   };
 
   var lastTimeout;
