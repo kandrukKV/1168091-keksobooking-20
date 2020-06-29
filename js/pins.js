@@ -28,14 +28,18 @@
 
   var renderPins = function (data) {
     var pins = createPins(data);
+    window.card.remove();
+    removePins();
     mapPins.appendChild(pins);
   };
 
   var removePins = function () {
     var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    pins.forEach(function (pin) {
-      pin.remove();
-    });
+    if (pins) {
+      pins.forEach(function (pin) {
+        pin.remove();
+      });
+    }
   };
 
   window.pins = {
