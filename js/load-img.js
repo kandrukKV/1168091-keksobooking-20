@@ -23,7 +23,7 @@
     }
   };
 
-  imageFileChooser.addEventListener('change', function () {
+  var onImageFileChoserChange = function () {
     var file = imageFileChooser.files[0];
 
     if (isTrueImg(file)) {
@@ -37,9 +37,9 @@
       });
       reader.readAsDataURL(file);
     }
-  });
+  };
 
-  avatarFileChooser.addEventListener('change', function () {
+  var onAvatarFileChoserChange = function () {
     var file = avatarFileChooser.files[0];
 
     if (isTrueImg(file)) {
@@ -51,6 +51,21 @@
 
       reader.readAsDataURL(file);
     }
-  });
+  };
+
+  var activateLoadImg = function () {
+    imageFileChooser.addEventListener('change', onImageFileChoserChange);
+    avatarFileChooser.addEventListener('change', onAvatarFileChoserChange);
+  };
+
+  var disableLoadImg = function () {
+    imageFileChooser.removeEventListener('change', onImageFileChoserChange);
+    avatarFileChooser.removeEventListener('change', onAvatarFileChoserChange);
+  };
+
+  window.loadImg = {
+    activate: activateLoadImg,
+    disable: disableLoadImg
+  };
 
 })();
