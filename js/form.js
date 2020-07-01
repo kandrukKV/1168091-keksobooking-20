@@ -25,7 +25,7 @@
     return parseInt(valueOfRooms, 10) >= parseInt(valueOfCapacity, 10);
   };
 
-  roomNumberSelect.addEventListener('change', function () {
+  var onRoomNumberSelectChange = function () {
     var currentRoomNumber = roomNumberSelect.value;
     var currentCapacity = capacity.value;
     if (!isValidCapacity(currentRoomNumber, currentCapacity)) {
@@ -34,9 +34,9 @@
       roomNumberSelect.setCustomValidity('');
       capacity.setCustomValidity('');
     }
-  });
+  };
 
-  capacity.addEventListener('change', function () {
+  var onCapacityChange = function () {
     var currentRoomNumber = roomNumberSelect.value;
     var currentCapacity = capacity.value;
     if (!isValidCapacity(currentRoomNumber, currentCapacity)) {
@@ -45,29 +45,29 @@
       capacity.setCustomValidity('');
       roomNumberSelect.setCustomValidity('');
     }
-  });
+  };
 
-  adForm.addEventListener('submit', function (evt) {
+  var onAdFormSubmit = function (evt) {
     evt.preventDefault();
     var myFormData = new FormData(adForm);
     myFormData.append('address', inputAddress.value);
     window.upload(myFormData, window.page.showSuccessMessage, window.page.showErrorMessage);
-  });
+  };
 
-  inputTypeOfHousing.addEventListener('change', function () {
+  var onInputTypeOfHousingChange = function () {
     inputCostOfHousing.min = MIN_PRICE[inputTypeOfHousing.value];
     inputCostOfHousing.placeholder = MIN_PRICE[inputTypeOfHousing.value];
-  });
+  };
 
-  selectTimeIn.addEventListener('change', function () {
+  var onSelectTimeInChange = function () {
     selectTimeOut.options[selectTimeIn.selectedIndex].selected = true;
-  });
+  };
 
-  selectTimeOut.addEventListener('change', function () {
+  var onSelectTimeOutChange = function () {
     selectTimeIn.options[selectTimeOut.selectedIndex].selected = true;
-  });
+  };
 
-  inputTitle.addEventListener('invalid', function () {
+  var onInputTitleInvalid = function () {
     if (inputTitle.validity.tooShort) {
       inputTitle.setCustomValidity('Имя должно состоять минимум из 30-ти символов');
     } else if (inputTitle.validity.tooLong) {
@@ -77,29 +77,55 @@
     } else {
       inputTitle.setCustomValidity('');
     }
-  });
+  };
 
-  inputCostOfHousing.addEventListener('invalid', function () {
+  var onInputCostOfHousungInvalid = function () {
     if (inputTitle.validity.valueMissing) {
       inputTitle.setCustomValidity('Это обязательное поле');
     } else {
       inputTitle.setCustomValidity('');
     }
-  });
+  };
 
-  var disableAdForm = function () {
-    adForm.classList.add('ad-form--disabled');
-    adForm.reset();
-    adFormFieldsets.forEach(function (adFormFieldset) {
-      adFormFieldset.disabled = true;
-    });
+  var addListeners = function () {
+    roomNumberSelect.addEventListener('change', onRoomNumberSelectChange);
+    capacity.addEventListener('change', onCapacityChange);
+    adForm.addEventListener('submit', onAdFormSubmit);
+    inputTypeOfHousing.addEventListener('change', onInputTypeOfHousingChange);
+    selectTimeIn.addEventListener('change', onSelectTimeInChange);
+    selectTimeOut.addEventListener('change', onSelectTimeOutChange);
+    inputTitle.addEventListener('invalid', onInputTitleInvalid);
+    inputCostOfHousing.addEventListener('invalid', onInputCostOfHousungInvalid);
+  };
+
+  var removeListeners = function () {
+    roomNumberSelect.removeEventListener('change', onRoomNumberSelectChange);
+    capacity.removeEventListener('change', onCapacityChange);
+    adForm.removeEventListener('submit', onAdFormSubmit);
+    inputTypeOfHousing.removeEventListener('change', onInputTypeOfHousingChange);
+    selectTimeIn.removeEventListener('change', onSelectTimeInChange);
+    selectTimeOut.removeEventListener('change', onSelectTimeOutChange);
+    inputTitle.removeEventListener('invalid', onInputTitleInvalid);
+    inputCostOfHousing.removeEventListener('invalid', onInputCostOfHousungInvalid);
   };
 
   var activateAdForm = function () {
     adForm.classList.remove('ad-form--disabled');
+    window.loadImg.activate();
+    addListeners();
     for (var i = 0; i < adFormFieldsets.length; i++) {
       adFormFieldsets[i].disabled = false;
     }
+  };
+
+  var disableAdForm = function () {
+    adForm.classList.add('ad-form--disabled');
+    removeListeners();
+    window.loadImg.disable();
+    adForm.reset();
+    adFormFieldsets.forEach(function (adFormFieldset) {
+      adFormFieldset.disabled = true;
+    });
   };
 
   var setAddress = function (position) {
