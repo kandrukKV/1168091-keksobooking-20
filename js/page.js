@@ -24,52 +24,62 @@
     window.form.setAddress(centralCoordinates);
   };
 
-  var removePopup = function (popup, listener) {
-    popup.remove();
-    document.removeEventListener('keydown', listener);
+  var isEscEvent = function (evt, action) {
+    if (evt.key === KEY_ESC) {
+      evt.preventDefault();
+      action();
+    }
   };
 
   var showSuccessMessage = function () {
     var successPopup = successTemplate.cloneNode(true);
 
-    var onPupapClosePressEsc = function (evt) {
-      if (evt.key === KEY_ESC) {
-        evt.preventDefault();
-        removePopup(successPopup, onPupapClosePressEsc);
-      }
+    var closeSuccsessMessage = function () {
+      document.removeEventListener('keydown', onSuccessPopupPressEsc);
+      successPopup.removeEventListener('click', onSuccessPopupClick);
+      successPopup.remove();
     };
 
-    successPopup.addEventListener('click', function (evt) {
-      evt.preventDefault();
-      removePopup(successPopup, onPupapClosePressEsc);
-    });
+    var onSuccessPopupPressEsc = function (evt) {
+      isEscEvent(evt, closeSuccsessMessage);
+    };
 
-    document.addEventListener('keydown', onPupapClosePressEsc);
+    var onSuccessPopupClick = function () {
+      closeSuccsessMessage();
+    };
+
+    successPopup.addEventListener('click', onSuccessPopupClick);
+    document.addEventListener('keydown', onSuccessPopupPressEsc);
+
     main.appendChild(successPopup);
 
     disablePage();
   };
 
   var showErrorMessage = function (message) {
-    var errorPupap = errorTemplate.cloneNode(true);
+    var errorPopup = errorTemplate.cloneNode(true);
 
-    var onPupapClosePressEsc = function (evt) {
-      if (evt.key === KEY_ESC) {
-        evt.preventDefault();
-        removePopup(errorPupap, onPupapClosePressEsc);
+    var closeErrorMassage = function () {
+      document.removeEventListener('keydown', onErrorMessagePressEsc);
+      errorPopup.removeEventListener('click', onErrorMessageClick);
+      errorPopup.remove();
+    };
+
+    var onErrorMessagePressEsc = function (evt) {
+      isEscEvent(evt, closeErrorMassage);
+    };
+
+    var onErrorMessageClick = function (evt) {
+      evt.preventDefault();
+      if (evt.target.tagName === POPUP_CLOSE_ELEMENT) {
+        closeErrorMassage();
       }
     };
 
-    errorPupap.addEventListener('click', function (evt) {
-      evt.preventDefault();
-      if (evt.target.tagName === POPUP_CLOSE_ELEMENT) {
-        removePopup(errorPupap, onPupapClosePressEsc);
-      }
-    });
-
-    document.addEventListener('keydown', onPupapClosePressEsc);
-    errorPupap.querySelector('.error__message').textContent = message;
-    main.appendChild(errorPupap);
+    errorPopup.addEventListener('click', onErrorMessageClick);
+    document.addEventListener('keydown', onErrorMessagePressEsc);
+    errorPopup.querySelector('.error__message').textContent = message;
+    main.appendChild(errorPopup);
   };
 
   window.page = {
