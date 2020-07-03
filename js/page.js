@@ -31,13 +31,17 @@
     }
   };
 
+  var closeMessage = function (popup, onPopuoPressEsc, onPopupClick) {
+    document.removeEventListener('keydown', onPopuoPressEsc);
+    popup.removeEventListener('click', onPopupClick);
+    popup.remove();
+  };
+
   var showSuccessMessage = function () {
     var successPopup = successTemplate.cloneNode(true);
 
     var closeSuccsessMessage = function () {
-      document.removeEventListener('keydown', onSuccessPopupPressEsc);
-      successPopup.removeEventListener('click', onSuccessPopupClick);
-      successPopup.remove();
+      closeMessage(successPopup, onSuccessPopupPressEsc, onSuccessPopupClick);
     };
 
     var onSuccessPopupPressEsc = function (evt) {
@@ -59,20 +63,18 @@
   var showErrorMessage = function (message) {
     var errorPopup = errorTemplate.cloneNode(true);
 
-    var closeErrorMassage = function () {
-      document.removeEventListener('keydown', onErrorMessagePressEsc);
-      errorPopup.removeEventListener('click', onErrorMessageClick);
-      errorPopup.remove();
+    var closeErrorMessage = function () {
+      closeMessage(errorPopup, onErrorMessagePressEsc, onErrorMessageClick);
     };
 
     var onErrorMessagePressEsc = function (evt) {
-      isEscEvent(evt, closeErrorMassage);
+      isEscEvent(evt, closeErrorMessage);
     };
 
     var onErrorMessageClick = function (evt) {
       evt.preventDefault();
       if (evt.target.tagName === POPUP_CLOSE_ELEMENT) {
-        closeErrorMassage();
+        closeErrorMessage();
       }
     };
 
