@@ -24,7 +24,7 @@
     window.form.setAddress(centralCoordinates);
   };
 
-  var isEscEvent = function (evt, action) {
+  var doEscEvent = function (evt, action) {
     if (evt.key === KEY_ESC) {
       evt.preventDefault();
       action();
@@ -45,7 +45,7 @@
     };
 
     var onSuccessPopupPressEsc = function (evt) {
-      isEscEvent(evt, closeSuccsessMessage);
+      doEscEvent(evt, closeSuccsessMessage);
     };
 
     var onSuccessPopupClick = function () {
@@ -68,7 +68,7 @@
     };
 
     var onErrorMessagePressEsc = function (evt) {
-      isEscEvent(evt, closeErrorMessage);
+      doEscEvent(evt, closeErrorMessage);
     };
 
     var onErrorMessageClick = function (evt) {
